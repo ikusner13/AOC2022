@@ -1,40 +1,46 @@
-export const part1 = (input: string) => {
-  const s = input.split("\n\n");
+const removeExtraSpaces = (s: string[]) => {
+  let count = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === "") {
+      count++;
+    }
 
+    if (s[i] !== "") {
+      count = 0;
+    }
+
+    if (count === 3) {
+      s.splice(i - 2, 3);
+      i -= 3;
+      count = 0;
+    }
+  }
+};
+
+const createStack = (s: string) => {
   const stack: string[][] = [];
-  s[0].split("\n").slice(0, -1).reverse().forEach((r, index) => {
+  s.split("\n").slice(0, -1).reverse().forEach((r, index) => {
+    const split = r.split(" ");
+
     if (index === 0) {
-      r.split(" ").forEach((i) => stack.push([i]));
+      split.forEach((i) => stack.push([i]));
       return;
     }
 
-    const s = r.split(" ");
+    removeExtraSpaces(split);
 
-    let count = 0;
-    for (let i = 0; i < s.length; i++) {
-      if (s[i] === "") {
-        count++;
-      }
-
-      if (s[i] !== "") {
-        count = 0;
-      }
-
-      if (count === 3) {
-        s.splice(i - 2, 3);
-        i -= 3;
-        count = 0;
-      }
-    }
-
-    s.forEach((j, index) => {
+    split.forEach((j, index) => {
       if (j !== "") {
         stack[index].push(j);
       }
     });
   });
 
-  const instructions = s[1].split("\n").map((a) => {
+  return stack;
+};
+
+const createInstructions = (s: string) => {
+  return s.split("\n").map((a) => {
     const r = a.split(" ");
     return {
       amount: Number(r[1]),
@@ -42,82 +48,37 @@ export const part1 = (input: string) => {
       destination: Number(r[5]) - 1,
     };
   });
+};
+export const part1 = (input: string) => {
+  const s = input.split("\n\n");
+
+  const stack = createStack(s[0]);
+  const instructions = createInstructions(s[1]);
 
   instructions.forEach((instruct) => {
-    const amount = instruct.amount;
-    const start = instruct.start;
-    const dest = instruct.destination;
-
-    const toTake = stack[start].splice(stack[start].length - amount, amount);
-
-    toTake.reverse().forEach((t) => stack[dest].push(t));
+    stack[instruct.start].splice(
+      stack[instruct.start].length - instruct.amount,
+      instruct.amount,
+    ).reverse().forEach((t) => stack[instruct.destination].push(t));
   });
 
-  let letters = "";
-  stack.forEach((e) => letters += e[e.length - 1][1]);
-
-  return letters;
+  return stack.map((e) => e[e.length - 1][1]).join("");
 };
 
 export const part2 = (input: string) => {
   const s = input.split("\n\n");
 
-  const stack: string[][] = [];
-  s[0].split("\n").slice(0, -1).reverse().forEach((r, index) => {
-    if (index === 0) {
-      r.split(" ").forEach((i) => stack.push([i]));
-      return;
-    }
-
-    const s = r.split(" ");
-
-    let count = 0;
-    for (let i = 0; i < s.length; i++) {
-      if (s[i] === "") {
-        count++;
-      }
-
-      if (s[i] !== "") {
-        count = 0;
-      }
-
-      if (count === 3) {
-        s.splice(i - 2, 3);
-        i -= 3;
-        count = 0;
-      }
-    }
-
-    s.forEach((j, index) => {
-      if (j !== "") {
-        stack[index].push(j);
-      }
-    });
-  });
-
-  const instructions = s[1].split("\n").map((a) => {
-    const r = a.split(" ");
-    return {
-      amount: Number(r[1]),
-      start: Number(r[3]) - 1,
-      destination: Number(r[5]) - 1,
-    };
-  });
+  const stack = createStack(s[0]);
+  const instructions = createInstructions(s[1]);
 
   instructions.forEach((instruct) => {
-    const amount = instruct.amount;
-    const start = instruct.start;
-    const dest = instruct.destination;
-
-    const toTake = stack[start].splice(stack[start].length - amount, amount);
-
-    toTake.forEach((t) => stack[dest].push(t));
+    stack[instruct.start].splice(
+      stack[instruct.start].length - instruct.amount,
+      instruct.amount,
+    ).forEach((t) => stack[instruct.destination].push(t));
   });
 
-  let letters = "";
-  stack.forEach((e) => letters += e[e.length - 1][1]);
-
-  return letters;
+  return stack.map((e) => e[e.length - 1][1]).join("");
 };
 
 export const main = () => {
