@@ -112,11 +112,11 @@ export const part2 = (input: string) => {
       }
 
       if (split[i][j] >= rowMax[i]?.value || rowMax[i]?.value === undefined) {
-        rowMax[i] = { position: j, value: split[i][j] };
+        rowMax[i] = { position: j, value: split[i][j] }; // this is wrong
       }
 
       if (split[i][j] >= colMax[j]?.value || colMax[j]?.value === undefined) {
-        colMax[j] = { position: i, value: split[i][j] };
+        colMax[j] = { position: i, value: split[i][j] }; // also wrong, but worked with input
       }
     }
   }
