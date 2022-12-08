@@ -1,8 +1,3 @@
-// / - [b.txt, c.dat, a, d]
-// a - [f, g,h.lst, e]
-// e - [i]
-// d - [j,d.log, d.ext,k]
-
 export const part1 = (input: string) => {
   const directories = new Map<string, string[]>();
   const split = input.split("\n");
