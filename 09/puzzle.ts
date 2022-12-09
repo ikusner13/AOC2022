@@ -162,10 +162,75 @@ export const part2 = (input: string) => {
         break;
       case "D":
         for (let i = 0; i < distance; i++) {
+          knots[0][0] = knots[0][0] + 1;
+
+          for (let i = 1; i < knots.length; i++) {
+            if (
+              !verticallyAdjacent(knots[i - 1], knots[i]) &&
+              knots[i - 1][1] === knots[i][1]
+            ) {
+              knots[i][0] = knots[i][0] + 1;
+            }
+
+            if (
+              !verticallyAdjacent(knots[i - 1], knots[i]) &&
+              knots[i - 1][1] !== knots[i][1]
+            ) {
+              if (diagnallyAdjacent(knots[i - 1], knots[i])) {
+                break;
+              }
+              knots[i][0] = knots[i][0] + 1;
+
+              if (knots[i - 1][1] > knots[i][1]) {
+                knots[i][1] = knots[i][1] + 1;
+              } else {
+                knots[i][1] = knots[i][1] - 1;
+              }
+            }
+          }
         }
         break;
       case "L":
         for (let i = 0; i < distance; i++) {
+          knots[0][1] = knots[0][1] - 1;
+
+          for (let i = 1; i < knots.length; i++) {
+            if (
+              !horizontallyAdjacent(knots[i - 1], knots[i]) &&
+              knots[i - 1][0] === knots[i][0]
+            ) {
+              console.log(
+                "not horizontally adjacent and same row",
+                knots[i - 1],
+                knots[i],
+              );
+              knots[i][1] = knots[i][1] - 1;
+            }
+
+            if (
+              !horizontallyAdjacent(knots[i - 1], knots[i]) &&
+              knots[i - 1][0] !== knots[i][0]
+            ) {
+              console.log(
+                "not horizontally adjacent and different row",
+                knots[i - 1],
+                knots[i],
+              );
+              if (diagnallyAdjacent(knots[i - 1], knots[i])) {
+                console.log("diagnally adjacent");
+                break;
+              }
+              knots[i][1] = knots[i][1] - 1;
+
+              if (knots[i - 1][0] > knots[i][0]) {
+                knots[i][0] = knots[i][0] + 1;
+              } else {
+                knots[i][0] = knots[i][0] - 1;
+              }
+
+              console.log("knots i", knots[i]);
+            }
+          }
         }
         break;
       case "R":
@@ -184,12 +249,15 @@ export const part2 = (input: string) => {
               !horizontallyAdjacent(knots[i - 1], knots[i]) &&
               knots[i - 1][0] !== knots[i][0]
             ) {
+              if (diagnallyAdjacent(knots[i - 1], knots[i])) {
+                break;
+              }
               knots[i][1] = knots[i][1] + 1;
 
               if (knots[i - 1][0] > knots[i][0]) {
-                knots[i][0] = knots[i][0] - 1;
-              } else {
                 knots[i][0] = knots[i][0] + 1;
+              } else {
+                knots[i][0] = knots[i][0] - 1;
               }
             }
           }
