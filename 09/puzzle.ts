@@ -82,8 +82,129 @@ export const part1 = (input: string) => {
   return visited.size + 1;
 };
 
+const horizontallyAdjacent = (head: number[], tail: number[]) => {
+  if (head[0] === tail[0] && head[1] === tail[1]) {
+    return true;
+  }
+
+  const adj = Math.abs(head[1] - tail[1]) <= 1 && head[0] === tail[0];
+
+  return adj;
+};
+
+const verticallyAdjacent = (head: number[], tail: number[]) => {
+  if (head[0] === tail[0] && head[1] === tail[1]) {
+    return true;
+  }
+
+  return Math.abs(head[0] - tail[0]) <= 1 && head[1] === tail[1];
+};
+
+const diagnallyAdjacent = (head: number[], tail: number[]) => {
+  return Math.abs(head[0] - tail[0]) <= 1 && Math.abs(head[1] - tail[1]) <= 1;
+};
+
 export const part2 = (input: string) => {
-  return input.split("\n").length;
+  const knots = [
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    [0, 0],
+  ];
+
+  const directions = input.split("\n");
+
+  const visited = new Set<string>();
+
+  for (const direction of directions) {
+    const heading = direction.split(" ")[0];
+    const distance = parseInt(direction.split(" ")[1]);
+
+    console.log("heading", heading, "distance", distance);
+
+    switch (heading) {
+      case "U":
+        for (let i = 0; i < distance; i++) {
+          knots[0][0] = knots[0][0] - 1;
+
+          for (let i = 1; i < knots.length; i++) {
+            if (
+              !verticallyAdjacent(knots[i - 1], knots[i]) &&
+              knots[i - 1][1] === knots[i][1]
+            ) {
+              knots[i][0] = knots[i][0] - 1;
+            }
+
+            if (
+              !verticallyAdjacent(knots[i - 1], knots[i]) &&
+              knots[i - 1][1] !== knots[i][1]
+            ) {
+              if (diagnallyAdjacent(knots[i - 1], knots[i])) {
+                break;
+              }
+              knots[i][0] = knots[i][0] - 1;
+
+              if (knots[i - 1][1] > knots[i][1]) {
+                knots[i][1] = knots[i][1] + 1;
+              } else {
+                knots[i][1] = knots[i][1] - 1;
+              }
+            }
+          }
+        }
+
+        break;
+      case "D":
+        for (let i = 0; i < distance; i++) {
+        }
+        break;
+      case "L":
+        for (let i = 0; i < distance; i++) {
+        }
+        break;
+      case "R":
+        for (let i = 0; i < distance; i++) {
+          knots[0][1] = knots[0][1] + 1;
+
+          for (let i = 1; i < knots.length; i++) {
+            if (
+              !horizontallyAdjacent(knots[i - 1], knots[i]) &&
+              knots[i - 1][0] === knots[i][0]
+            ) {
+              knots[i][1] = knots[i][1] + 1;
+            }
+
+            if (
+              !horizontallyAdjacent(knots[i - 1], knots[i]) &&
+              knots[i - 1][0] !== knots[i][0]
+            ) {
+              knots[i][1] = knots[i][1] + 1;
+
+              if (knots[i - 1][0] > knots[i][0]) {
+                knots[i][0] = knots[i][0] - 1;
+              } else {
+                knots[i][0] = knots[i][0] + 1;
+              }
+            }
+          }
+        }
+        break;
+      default:
+        break;
+    }
+
+    console.log("knots", knots, "\n");
+  }
+
+  // console.log("knots", knots);
+
+  return visited.size + 1;
 };
 
 export const main = () => {
@@ -91,7 +212,7 @@ export const main = () => {
 
   const input = Deno.readTextFileSync(file);
 
-  console.log("part1", part1(input));
+  // console.log("part1", part1(input));
   console.log("part2", part2(input));
 };
 
