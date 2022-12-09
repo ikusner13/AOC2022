@@ -1,3 +1,24 @@
+const isAdjacent = (head: number[], tail: number[]) => {
+  return Math.abs(
+        head[0] - tail[0],
+      ) <= 1 && Math.abs(head[1] - tail[1]) <= 1;
+};
+
+const updateAndCheckVisited = (
+  visited: Set<string>,
+  tailPointer: number[],
+  oldHeadPointer: number[],
+) => {
+  tailPointer[0] = oldHeadPointer[0];
+  tailPointer[1] = oldHeadPointer[1];
+
+  if (!visited.has(`${tailPointer[0]}-${tailPointer[1]}`)) {
+    visited.add(
+      `${tailPointer[0]}-${tailPointer[1]}`,
+    );
+  }
+};
+
 export const part1 = (input: string) => {
   const start = [500, 0];
 
@@ -6,9 +27,7 @@ export const part1 = (input: string) => {
 
   const directions = input.split("\n");
 
-  let visitedCount = 1;
-
-  const visited = new Set();
+  const visited = new Set<string>();
 
   for (const direction of directions) {
     const heading = direction.split(" ")[0];
@@ -18,22 +37,10 @@ export const part1 = (input: string) => {
       case "U":
         for (let i = 0; i < distance; i++) {
           const headPointerOld = [...headPointer];
-
           headPointer[0]--;
-          const isTailPointerAdjacent = Math.abs(
-                headPointer[0] - tailPointer[0],
-              ) <= 1 && Math.abs(headPointer[1] - tailPointer[1]) <= 1;
 
-          if (!isTailPointerAdjacent) {
-            tailPointer[0] = headPointerOld[0];
-            tailPointer[1] = headPointerOld[1];
-
-            if (!visited.has(`${tailPointer[0]}-${tailPointer[1]}`)) {
-              visited.add(
-                `${tailPointer[0]}-${tailPointer[1]}`,
-              );
-              visitedCount++;
-            }
+          if (!isAdjacent(headPointer, tailPointer)) {
+            updateAndCheckVisited(visited, tailPointer, headPointerOld);
           }
         }
         break;
@@ -41,20 +48,9 @@ export const part1 = (input: string) => {
         for (let i = 0; i < distance; i++) {
           const headPointerOld = [...headPointer];
           headPointer[0]++;
-          const isTailPointerAdjacent = Math.abs(
-                headPointer[0] - tailPointer[0],
-              ) <= 1 && Math.abs(headPointer[1] - tailPointer[1]) <= 1;
 
-          if (!isTailPointerAdjacent) {
-            tailPointer[0] = headPointerOld[0];
-            tailPointer[1] = headPointerOld[1];
-
-            if (!visited.has(`${tailPointer[0]}-${tailPointer[1]}`)) {
-              visited.add(
-                `${tailPointer[0]}-${tailPointer[1]}`,
-              );
-              visitedCount++;
-            }
+          if (!isAdjacent(headPointer, tailPointer)) {
+            updateAndCheckVisited(visited, tailPointer, headPointerOld);
           }
         }
         break;
@@ -63,20 +59,8 @@ export const part1 = (input: string) => {
           const headPointerOld = [...headPointer];
           headPointer[1]--;
 
-          const isTailPointerAdjacent = Math.abs(
-                headPointer[0] - tailPointer[0],
-              ) <= 1 && Math.abs(headPointer[1] - tailPointer[1]) <= 1;
-
-          if (!isTailPointerAdjacent) {
-            tailPointer[0] = headPointerOld[0];
-            tailPointer[1] = headPointerOld[1];
-
-            if (!visited.has(`${tailPointer[0]}-${tailPointer[1]}`)) {
-              visited.add(
-                `${tailPointer[0]}-${tailPointer[1]}`,
-              );
-              visitedCount++;
-            }
+          if (!isAdjacent(headPointer, tailPointer)) {
+            updateAndCheckVisited(visited, tailPointer, headPointerOld);
           }
         }
         break;
@@ -85,20 +69,8 @@ export const part1 = (input: string) => {
           const headPointerOld = [...headPointer];
           headPointer[1]++;
 
-          const isTailPointerAdjacent = Math.abs(
-                headPointer[0] - tailPointer[0],
-              ) <= 1 && Math.abs(headPointer[1] - tailPointer[1]) <= 1;
-
-          if (!isTailPointerAdjacent) {
-            tailPointer[0] = headPointerOld[0];
-            tailPointer[1] = headPointerOld[1];
-
-            if (!visited.has(`${tailPointer[0]}-${tailPointer[1]}`)) {
-              visited.add(
-                `${tailPointer[0]}-${tailPointer[1]}`,
-              );
-              visitedCount++;
-            }
+          if (!isAdjacent(headPointer, tailPointer)) {
+            updateAndCheckVisited(visited, tailPointer, headPointerOld);
           }
         }
         break;
@@ -107,7 +79,7 @@ export const part1 = (input: string) => {
     }
   }
 
-  return visitedCount;
+  return visited.size + 1;
 };
 
 export const part2 = (input: string) => {
