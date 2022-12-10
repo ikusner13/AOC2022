@@ -83,25 +83,21 @@ export const part1 = (input: string) => {
 };
 
 const horizontallyAdjacent = (head: number[], tail: number[]) => {
-  if (head[0] === tail[0] && head[1] === tail[1]) {
-    return true;
-  }
-
-  const adj = Math.abs(head[1] - tail[1]) <= 1 && head[0] === tail[0];
+  const adj = Math.abs(head[0] - tail[0]) === 1 && head[1] === tail[1];
 
   return adj;
 };
 
 const verticallyAdjacent = (head: number[], tail: number[]) => {
-  if (head[0] === tail[0] && head[1] === tail[1]) {
-    return true;
-  }
-
-  return Math.abs(head[0] - tail[0]) <= 1 && head[1] === tail[1];
+  return Math.abs(head[1] - tail[1]) === 1 && head[0] === tail[0];
 };
 
 const diagnallyAdjacent = (head: number[], tail: number[]) => {
-  return Math.abs(head[0] - tail[0]) <= 1 && Math.abs(head[1] - tail[1]) <= 1;
+  return Math.abs(head[1] - tail[1]) === 1 && Math.abs(head[0] - tail[0]) === 1;
+};
+
+const samePosition = (head: number[], tail: number[]) => {
+  return head[0] === tail[0] && head[1] === tail[1];
 };
 
 export const part2 = (input: string) => {
@@ -126,139 +122,152 @@ export const part2 = (input: string) => {
     const heading = direction.split(" ")[0];
     const distance = parseInt(direction.split(" ")[1]);
 
-    console.log("heading", heading, "distance", distance);
-
     switch (heading) {
       case "U":
         for (let i = 0; i < distance; i++) {
-          knots[0][0] = knots[0][0] - 1;
+          knots[0][1] = knots[0][1] + 1;
 
-          for (let i = 1; i < knots.length; i++) {
+          for (let j = 1; j < knots.length; j++) {
             if (
-              !verticallyAdjacent(knots[i - 1], knots[i]) &&
-              knots[i - 1][1] === knots[i][1]
+              horizontallyAdjacent(knots[j - 1], knots[j]) ||
+              verticallyAdjacent(knots[j - 1], knots[j]) ||
+              diagnallyAdjacent(knots[j - 1], knots[j]) ||
+              samePosition(knots[j - 1], knots[j])
             ) {
-              knots[i][0] = knots[i][0] - 1;
+              break;
             }
 
-            if (
-              !verticallyAdjacent(knots[i - 1], knots[i]) &&
-              knots[i - 1][1] !== knots[i][1]
-            ) {
-              if (diagnallyAdjacent(knots[i - 1], knots[i])) {
-                break;
-              }
-              knots[i][0] = knots[i][0] - 1;
+            if (knots[j - 1][0] > knots[j][0]) {
+              knots[j][0] = knots[j][0] + 1;
+            }
 
-              if (knots[i - 1][1] > knots[i][1]) {
-                knots[i][1] = knots[i][1] + 1;
-              } else {
-                knots[i][1] = knots[i][1] - 1;
-              }
+            if (knots[j - 1][0] < knots[j][0]) {
+              knots[j][0] = knots[j][0] - 1;
+            }
+
+            if (knots[j - 1][1] > knots[j][1]) {
+              knots[j][1] = knots[j][1] + 1;
+            }
+
+            if (knots[j - 1][1] < knots[j][1]) {
+              knots[j][1] = knots[j][1] - 1;
+            }
+
+            if (j === knots.length - 1) {
+              visited.add(
+                `${knots[j][0]}-${knots[j][1]}`,
+              );
             }
           }
         }
-
         break;
       case "D":
         for (let i = 0; i < distance; i++) {
-          knots[0][0] = knots[0][0] + 1;
+          knots[0][1] = knots[0][1] - 1;
 
-          for (let i = 1; i < knots.length; i++) {
+          for (let j = 1; j < knots.length; j++) {
             if (
-              !verticallyAdjacent(knots[i - 1], knots[i]) &&
-              knots[i - 1][1] === knots[i][1]
+              horizontallyAdjacent(knots[j - 1], knots[j]) ||
+              verticallyAdjacent(knots[j - 1], knots[j]) ||
+              diagnallyAdjacent(knots[j - 1], knots[j]) ||
+              samePosition(knots[j - 1], knots[j])
             ) {
-              knots[i][0] = knots[i][0] + 1;
+              break;
+            }
+            if (knots[j - 1][0] > knots[j][0]) {
+              knots[j][0] = knots[j][0] + 1;
             }
 
-            if (
-              !verticallyAdjacent(knots[i - 1], knots[i]) &&
-              knots[i - 1][1] !== knots[i][1]
-            ) {
-              if (diagnallyAdjacent(knots[i - 1], knots[i])) {
-                break;
-              }
-              knots[i][0] = knots[i][0] + 1;
+            if (knots[j - 1][0] < knots[j][0]) {
+              knots[j][0] = knots[j][0] - 1;
+            }
 
-              if (knots[i - 1][1] > knots[i][1]) {
-                knots[i][1] = knots[i][1] + 1;
-              } else {
-                knots[i][1] = knots[i][1] - 1;
-              }
+            if (knots[j - 1][1] > knots[j][1]) {
+              knots[j][1] = knots[j][1] + 1;
+            }
+
+            if (knots[j - 1][1] < knots[j][1]) {
+              knots[j][1] = knots[j][1] - 1;
+            }
+
+            if (j === knots.length - 1) {
+              visited.add(
+                `${knots[j][0]}-${knots[j][1]}`,
+              );
             }
           }
         }
         break;
       case "L":
         for (let i = 0; i < distance; i++) {
-          knots[0][1] = knots[0][1] - 1;
+          knots[0][0] = knots[0][0] - 1;
 
-          for (let i = 1; i < knots.length; i++) {
+          for (let j = 1; j < knots.length; j++) {
             if (
-              !horizontallyAdjacent(knots[i - 1], knots[i]) &&
-              knots[i - 1][0] === knots[i][0]
+              horizontallyAdjacent(knots[j - 1], knots[j]) ||
+              verticallyAdjacent(knots[j - 1], knots[j]) ||
+              diagnallyAdjacent(knots[j - 1], knots[j]) ||
+              samePosition(knots[j - 1], knots[j])
             ) {
-              console.log(
-                "not horizontally adjacent and same row",
-                knots[i - 1],
-                knots[i],
-              );
-              knots[i][1] = knots[i][1] - 1;
+              break;
             }
 
-            if (
-              !horizontallyAdjacent(knots[i - 1], knots[i]) &&
-              knots[i - 1][0] !== knots[i][0]
-            ) {
-              console.log(
-                "not horizontally adjacent and different row",
-                knots[i - 1],
-                knots[i],
+            if (knots[j - 1][0] > knots[j][0]) {
+              knots[j][0] = knots[j][0] + 1;
+            }
+
+            if (knots[j - 1][0] < knots[j][0]) {
+              knots[j][0] = knots[j][0] - 1;
+            }
+
+            if (knots[j - 1][1] > knots[j][1]) {
+              knots[j][1] = knots[j][1] + 1;
+            }
+
+            if (knots[j - 1][1] < knots[j][1]) {
+              knots[j][1] = knots[j][1] - 1;
+            }
+
+            if (j === 9) {
+              visited.add(
+                `${knots[j][0]}-${knots[j][1]}`,
               );
-              if (diagnallyAdjacent(knots[i - 1], knots[i])) {
-                console.log("diagnally adjacent");
-                break;
-              }
-              knots[i][1] = knots[i][1] - 1;
-
-              if (knots[i - 1][0] > knots[i][0]) {
-                knots[i][0] = knots[i][0] + 1;
-              } else {
-                knots[i][0] = knots[i][0] - 1;
-              }
-
-              console.log("knots i", knots[i]);
             }
           }
         }
         break;
       case "R":
         for (let i = 0; i < distance; i++) {
-          knots[0][1] = knots[0][1] + 1;
+          knots[0][0] = knots[0][0] + 1;
 
-          for (let i = 1; i < knots.length; i++) {
+          for (let j = 1; j < knots.length; j++) {
             if (
-              !horizontallyAdjacent(knots[i - 1], knots[i]) &&
-              knots[i - 1][0] === knots[i][0]
+              horizontallyAdjacent(knots[j - 1], knots[j]) ||
+              verticallyAdjacent(knots[j - 1], knots[j]) ||
+              diagnallyAdjacent(knots[j - 1], knots[j]) ||
+              samePosition(knots[j - 1], knots[j])
             ) {
-              knots[i][1] = knots[i][1] + 1;
+              break;
+            }
+            if (knots[j - 1][0] > knots[j][0]) {
+              knots[j][0] = knots[j][0] + 1;
             }
 
-            if (
-              !horizontallyAdjacent(knots[i - 1], knots[i]) &&
-              knots[i - 1][0] !== knots[i][0]
-            ) {
-              if (diagnallyAdjacent(knots[i - 1], knots[i])) {
-                break;
-              }
-              knots[i][1] = knots[i][1] + 1;
+            if (knots[j - 1][0] < knots[j][0]) {
+              knots[j][0] = knots[j][0] - 1;
+            }
 
-              if (knots[i - 1][0] > knots[i][0]) {
-                knots[i][0] = knots[i][0] + 1;
-              } else {
-                knots[i][0] = knots[i][0] - 1;
-              }
+            if (knots[j - 1][1] > knots[j][1]) {
+              knots[j][1] = knots[j][1] + 1;
+            }
+
+            if (knots[j - 1][1] < knots[j][1]) {
+              knots[j][1] = knots[j][1] - 1;
+            }
+            if (j === 9) {
+              visited.add(
+                `${knots[j][0]}-${knots[j][1]}`,
+              );
             }
           }
         }
@@ -266,11 +275,7 @@ export const part2 = (input: string) => {
       default:
         break;
     }
-
-    console.log("knots", knots, "\n");
   }
-
-  // console.log("knots", knots);
 
   return visited.size + 1;
 };
@@ -280,7 +285,7 @@ export const main = () => {
 
   const input = Deno.readTextFileSync(file);
 
-  // console.log("part1", part1(input));
+  console.log("part1", part1(input));
   console.log("part2", part2(input));
 };
 
