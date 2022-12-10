@@ -5,18 +5,16 @@ const isAdjacent = (head: number[], tail: number[]) => {
 };
 
 export const part1 = (input: string) => {
-  const start = [0, 0];
-
-  const headPointer = [...start];
-  const tailPointer = [...start];
+  const headPointer = [0, 0];
+  const tailPointer = [0, 0];
 
   const directions = input.split("\n");
 
   const visited = new Set<string>();
 
-  for (const direction of directions) {
-    const heading = direction.split(" ")[0];
-    const distance = parseInt(direction.split(" ")[1]);
+  for (const d of directions) {
+    const heading = d.split(" ")[0];
+    const distance = parseInt(d.split(" ")[1], 10);
 
     for (let i = 0; i < distance; i++) {
       const oldHeadPointer = [...headPointer];
