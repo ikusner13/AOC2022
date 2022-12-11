@@ -135,7 +135,7 @@ const inputMonkeys: Monkey[] = [
   },
 ];
 
-export const part1 = (input: string) => {
+export const part1 = () => {
   const monkeyRef = inputMonkeys;
   for (let i = 0; i < 20; i++) {
     for (const monkey of monkeyRef) {
@@ -174,8 +174,46 @@ export const part1 = (input: string) => {
     .reduce((a, b) => a * b);
 };
 
-export const part2 = (input: string) => {
-  return input.split("\n").length;
+export const part2 = () => {
+  const monkeyRef = inputMonkeys;
+  const modulus = monkeyRef.map((m) => m.test.case).reduce(
+    (a, b) => a * parseInt(b, 10),
+    1,
+  );
+
+  for (let i = 0; i < 10_000; i++) {
+    for (const monkey of monkeyRef) {
+      for (const item of monkey.items) {
+        monkey.inspects++;
+
+        let op = monkey.operation;
+
+        if (op === "* old") {
+          op = "* " + item;
+        }
+
+        let itemWorryLevelAfterInspect = eval(
+          `${item.toString()} ${op}`,
+        );
+
+        itemWorryLevelAfterInspect = itemWorryLevelAfterInspect % modulus;
+
+        if (itemWorryLevelAfterInspect % parseInt(monkey.test.case, 10) === 0) {
+          monkeyRef[monkey.test.true].items.push(itemWorryLevelAfterInspect);
+        } else {
+          monkeyRef[monkey.test.false].items.push(itemWorryLevelAfterInspect);
+        }
+
+        monkey.items = monkey.items.filter((i) => i !== item);
+      }
+    }
+  }
+
+  return monkeyRef
+    .map((monkey) => monkey.inspects)
+    .sort((a, b) => b - a)
+    .slice(0, 2)
+    .reduce((a, b) => a * b);
 };
 
 export const main = () => {
@@ -183,8 +221,8 @@ export const main = () => {
 
   const input = Deno.readTextFileSync(file);
 
-  console.log("part1", part1(input));
-  // console.log("part2", part2(input));
+  // console.log("part1", part1());
+  console.log("part2", part2());
 };
 
 import.meta.main && main();
