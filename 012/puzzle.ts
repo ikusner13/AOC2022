@@ -1,11 +1,3 @@
-const sample = [
-  "Sabqponm",
-  "abcryxxl",
-  "accszExk",
-  "acctuvwj",
-  "abdefghi",
-];
-
 const alphabet = "abcdefghijklmnopqrstuvwxyz";
 
 type Path = {
@@ -19,12 +11,26 @@ type QueueItem = {
   path: Path[];
 };
 
-export const part1 = () => {
+const parseInput = (input: string) => {
+  return input.split("\n");
+};
+
+export const part1 = (input: string) => {
+  const parsed = parseInput(input);
+
+  console.log(parsed.length);
+  console.log(parsed[0].length);
+
+  const startingRow = parsed.findIndex((row) => row.includes("S"));
+  const startingCol = parsed[startingRow].indexOf("S");
+
+  console.log(startingRow, startingCol);
+
   const queue: QueueItem[] = [{
-    x: 0,
-    y: 0,
+    x: startingCol,
+    y: startingRow,
     path: [
-      { x: 0, y: 0 },
+      { x: startingCol, y: startingRow },
     ],
   }];
 
@@ -33,11 +39,8 @@ export const part1 = () => {
   let endPath: Path[] = [];
 
   while (queue.length) {
-    console.log("visited", visited);
-    console.log("queue", queue.map((item) => `${item.x},${item.y}`));
     // console.log("queue", queue.map((item) => `${item.x},${item.y}`));
     const { x, y, path } = queue.shift()!;
-    // console.log("x", x, "y", y);
     const directionsToCheck = [];
 
     if (x > 0) {
@@ -60,7 +63,7 @@ export const part1 = () => {
       }
     }
 
-    if (x < 7) {
+    if (x < parsed[0].length - 1) {
       if (
         !queue.find((item) =>
           item.x === x + 1 && item.y === y &&
@@ -100,7 +103,7 @@ export const part1 = () => {
       }
     }
 
-    if (y < 4) {
+    if (y < parsed.length - 1) {
       if (
         !queue.find((item) =>
           item.x === x && item.y === y + 1 &&
@@ -120,26 +123,13 @@ export const part1 = () => {
       }
     }
 
-    console.log(
-      "directionsToCheck",
-      directionsToCheck.map((item) => `${item.x},${item.y}`),
-    );
+    // console.log("directionsToCheck", directionsToCheck);
 
     for (const direction of directionsToCheck) {
-      const nextChar = sample[direction.y][direction.x];
-      const currentChar = sample[y][x];
+      const nextChar = parsed[direction.y][direction.x];
+      const currentChar = parsed[y][x];
 
-      if (nextChar === "S") {
-        const value = alphabet.indexOf("a");
-
-        if (
-          value - alphabet.indexOf(currentChar) === 1 ||
-          value - alphabet.indexOf(currentChar) === 0
-        ) {
-          queue.push(direction);
-          continue;
-        }
-      }
+      // console.log("currentChar", currentChar);
 
       if (currentChar === "S") {
         const value = alphabet.indexOf("a");
@@ -162,7 +152,9 @@ export const part1 = () => {
       if (
         alphabet.indexOf(nextChar) - alphabet.indexOf(currentChar) === 1 ||
         alphabet.indexOf(nextChar) -
-              alphabet.indexOf(currentChar) === 0
+              alphabet.indexOf(currentChar) === 0 ||
+        (alphabet.indexOf(nextChar) < alphabet.indexOf(currentChar) &&
+          nextChar !== "E")
       ) {
         queue.push(direction);
       }
@@ -172,10 +164,7 @@ export const part1 = () => {
       });
     }
 
-    console.log("queue - after", queue.map((item) => `${item.x},${item.y}`));
-
     visited.add(`${x},${y}`);
-    console.log("\n");
   }
 };
 
@@ -188,7 +177,7 @@ export const main = () => {
 
   const input = Deno.readTextFileSync(file);
 
-  console.log("part1", part1());
+  console.log("part1", part1(input));
   // console.log("part2", part2(input));
 };
 
