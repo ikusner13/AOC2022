@@ -332,8 +332,10 @@ export const main = () => {
 
   const input = Deno.readTextFileSync(file);
 
-  console.log("part1", part1(input));
+  // console.log("part1", part1(input));
+  console.time("part2");
   console.log("part2", part2(input));
+  console.timeEnd("part2");
 };
 
 import.meta.main && main();
